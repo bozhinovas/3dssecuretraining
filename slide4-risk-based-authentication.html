@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide 4 – Risk-Based Authentication</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #edf0ec;
+  }
+  .slide {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    padding: clamp(10px, 2.2vw, 26px) clamp(12px, 3.5vw, 38px) clamp(10px, 2vw, 20px);
+  }
+  .slide-title {
+    color: #2d5a1b;
+    font-size: clamp(14px, 2.6vw, 22px);
+    font-weight: 700; text-align: center; flex-shrink: 0;
+  }
+  .divider {
+    height: 2px; background: #c8d9c0; border-radius: 2px;
+    margin: clamp(5px, 0.9vw, 10px) 0; flex-shrink: 0;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: clamp(10px, 1.3vw, 12.5px);
+    color: #4a5a44; flex-shrink: 0;
+    margin-bottom: clamp(6px, 1.2vw, 12px);
+  }
+  .hint {
+    text-align: center;
+    font-size: clamp(9px, 1.1vw, 11px);
+    color: #7a9a6a; flex-shrink: 0;
+    margin-bottom: clamp(5px, 1vw, 10px);
+  }
+
+  /* main two-column layout */
+  .main-row {
+    display: flex; gap: clamp(8px, 2vw, 18px);
+    flex: 1; min-height: 0;
+  }
+
+  /* LEFT: 2x3 grid of factors */
+  .factors-col {
+    flex: 1.15; display: flex; flex-direction: column; min-width: 0;
+  }
+  .col-label {
+    font-size: clamp(9px, 1.1vw, 11px);
+    font-weight: 700; color: #5a9e3a;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: clamp(5px, 0.8vw, 8px); flex-shrink: 0;
+  }
+  .factors-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(5px, 0.9vw, 8px);
+    flex: 1; min-height: 0;
+  }
+  .factor-card {
+    background: #fff;
+    border-radius: 10px;
+    border: 1.5px solid #c8d9c0;
+    padding: clamp(6px, 1.1vw, 11px) clamp(7px, 1.1vw, 11px);
+    display: flex; align-items: center;
+    gap: clamp(6px, 1vw, 9px);
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s, transform 0.12s;
+  }
+  .factor-card:hover { border-color: #5a9e3a; background: #eef8e8; transform: translateY(-1px); }
+  .factor-card.active { border-color: #3a7a20; background: #daf0d0; }
+  .f-icon {
+    width: clamp(28px, 4.5vw, 40px);
+    height: clamp(28px, 4.5vw, 40px);
+    border-radius: 50%; background: #c8e0c0;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .f-icon svg { width: 55%; height: 55%; }
+  .f-name {
+    font-size: clamp(9px, 1.2vw, 12px);
+    font-weight: 600; color: #2a3a22; line-height: 1.3;
+  }
+
+  /* ARROW divider */
+  .arrow-col {
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; width: clamp(20px, 3.5vw, 36px);
+  }
+  .arrow-col svg { width: 100%; }
+
+  /* RIGHT: 3 outcomes */
+  .outcomes-col {
+    flex: 1; display: flex; flex-direction: column; min-width: 0;
+  }
+  .outcomes-col .col-label { color: #4a6a3a; }
+  .outcomes-list {
+    display: flex; flex-direction: column;
+    gap: clamp(5px, 0.9vw, 8px);
+    flex: 1; min-height: 0;
+  }
+  .outcome-card {
+    flex: 1;
+    border-radius: 10px; border: 1.5px solid #c8d9c0;
+    padding: clamp(6px, 1.1vw, 11px) clamp(8px, 1.2vw, 13px);
+    display: flex; align-items: center;
+    gap: clamp(7px, 1.1vw, 11px);
+    background: #fff;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .outcome-card.highlight-allow  { border-color: #3a7a20; background: #eef8e8; }
+  .outcome-card.highlight-3ds    { border-color: #c87a10; background: #fef5e7; }
+  .outcome-card.highlight-reject { border-color: #b03030; background: #fdf0f0; }
+  .o-icon {
+    width: clamp(30px, 5vw, 44px);
+    height: clamp(30px, 5vw, 44px);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .icon-allow  { background: #d4ecc8; }
+  .icon-3ds    { background: #fde9cc; }
+  .icon-reject { background: #fdd8d8; }
+  .o-icon svg { width: 55%; height: 55%; }
+  .o-text { flex: 1; min-width: 0; }
+  .o-title {
+    font-size: clamp(10px, 1.3vw, 13px);
+    font-weight: 700; line-height: 1.2; margin-bottom: 2px;
+  }
+  .t-allow  { color: #2d6614; }
+  .t-3ds    { color: #8a4d10; }
+  .t-reject { color: #8a2020; }
+  .o-desc {
+    font-size: clamp(9px, 1.1vw, 11.5px);
+    color: #666; line-height: 1.45;
+  }
+
+  .summary-bar {
+    background: #fff; border-radius: 10px;
+    padding: clamp(7px, 1.2vw, 12px) clamp(12px, 2vw, 20px);
+    margin-top: clamp(6px, 1.1vw, 11px);
+    text-align: center;
+    font-size: clamp(10px, 1.3vw, 12.5px);
+    color: #2a2a2a; border: 1px solid #dde8d8;
+    flex-shrink: 0;
+  }
+  .summary-bar strong { color: #3a7a20; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="slide-title">Risk-Based Authentication</div>
+  <div class="divider"></div>
+  <p class="subtitle">Banks evaluate multiple signals to decide how much authentication is required.</p>
+  <p class="hint">Click a factor to see the likely outcome</p>
+
+  <div class="main-row">
+
+    <!-- LEFT: 2x3 factor grid -->
+    <div class="factors-col">
+      <div class="col-label">Risk factors evaluated</div>
+      <div class="factors-grid">
+
+        <div class="factor-card" onclick="activate(this,'allow')">
+          <div class="f-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="4" y="4" width="16" height="16" rx="3" stroke="#3a7a20" stroke-width="1.8"/>
+              <path d="M8 12h8M12 8v8" stroke="#3a7a20" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="f-name">Transaction amount</div>
+        </div>
+
+        <div class="factor-card" onclick="activate(this,'allow')">
+          <div class="f-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="5" y="4" width="14" height="17" rx="3" stroke="#3a7a20" stroke-width="1.8"/>
+              <path d="M9 9h6M9 13h4" stroke="#3a7a20" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="f-name">Device information</div>
+        </div>
+
+        <div class="factor-card" onclick="activate(this,'allow')">
+          <div class="f-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="8" r="3.5" stroke="#3a7a20" stroke-width="1.8"/>
+              <path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="f-name">Customer history</div>
+        </div>
+
+        <div class="factor-card" onclick="activate(this,'3ds')">
+          <div class="f-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M3 9l9-6 9 6v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" stroke="#3a7a20" stroke-width="1.8"/>
+              <path d="M9 21V12h6v9" stroke="#3a7a20" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="f-name">Merchant category</div>
+        </div>
+
+        <div class="factor-card" onclick="activate(this,'3ds')">
+          <div class="f-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="8" stroke="#3a7a20" stroke-width="1.8"/>
+              <path d="M12 8v4l3 2" stroke="#3a7a20" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="f-name">Location &amp; time patterns</div>
+        </div>
+
+        <div class="factor-card" onclick="activate(this,'reject')">
+          <div class="f-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <rect x="3" y="6" width="18" height="13" rx="2" stroke="#3a7a20" stroke-width="1.8"/>
+              <path d="M3 10h18" stroke="#3a7a20" stroke-width="1.6"/>
+              <path d="M7 15h4" stroke="#3a7a20" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="f-name">Browser / device data</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ARROW -->
+    <div class="arrow-col">
+      <svg viewBox="0 0 24 60" fill="none">
+        <path d="M12 4v44M5 42l7 10 7-10" stroke="#5a9e3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- RIGHT: outcomes -->
+    <div class="outcomes-col">
+      <div class="col-label">Issuer decision</div>
+      <div class="outcomes-list">
+
+        <div class="outcome-card" id="card-allow">
+          <div class="o-icon icon-allow">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="8" stroke="#3a7a20" stroke-width="1.8"/>
+              <path d="M8 12l3 3 5-5" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="o-text">
+            <div class="o-title t-allow">Allow without challenge</div>
+            <div class="o-desc">Low-risk signals — payment approved seamlessly, no customer action needed</div>
+          </div>
+        </div>
+
+        <div class="outcome-card" id="card-3ds">
+          <div class="o-icon icon-3ds">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 3L20 7v5c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V7l8-4z" stroke="#c87a10" stroke-width="1.8"/>
+              <path d="M12 10v3.5M12 15.5v1.5" stroke="#c87a10" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="o-text">
+            <div class="o-title t-3ds">Trigger 3DS authentication</div>
+            <div class="o-desc">Medium-risk signals — customer verifies identity via OTP or biometrics</div>
+          </div>
+        </div>
+
+        <div class="outcome-card" id="card-reject">
+          <div class="o-icon icon-reject">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="8" stroke="#b03030" stroke-width="1.8"/>
+              <path d="M9 9l6 6M15 9l-6 6" stroke="#b03030" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="o-text">
+            <div class="o-title t-reject">Reject the transaction</div>
+            <div class="o-desc">High-risk signals — transaction blocked to protect the cardholder</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    The issuer weighs <strong>all signals together</strong> — no single factor alone determines the outcome.
+  </div>
+</div>
+
+<script>
+  function activate(el, outcome) {
+    document.querySelectorAll('.factor-card').forEach(f => f.classList.remove('active'));
+    document.querySelectorAll('.outcome-card').forEach(c => {
+      c.classList.remove('highlight-allow','highlight-3ds','highlight-reject');
+    });
+    el.classList.add('active');
+    document.getElementById('card-' + outcome).classList.add('highlight-' + outcome);
+  }
+</script>
+</body>
+</html>
