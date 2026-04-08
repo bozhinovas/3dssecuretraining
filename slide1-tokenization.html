@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide 1 – What Makes Wallet Payments Different?</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #edf0ec;
+  }
+  .slide {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    padding: clamp(12px, 3vw, 32px) clamp(12px, 4vw, 40px) clamp(10px, 2.5vw, 24px);
+  }
+  .slide-title {
+    color: #2d5a1b;
+    font-size: clamp(15px, 2.8vw, 24px);
+    font-weight: 700; text-align: center;
+    flex-shrink: 0;
+  }
+  .divider {
+    height: 2px; background: #c8d9c0; border-radius: 2px;
+    margin: clamp(6px, 1.2vw, 14px) 0; flex-shrink: 0;
+  }
+  .hint {
+    text-align: center;
+    font-size: clamp(10px, 1.4vw, 13px);
+    color: #7a9a6a; flex-shrink: 0;
+    margin-bottom: clamp(6px, 1.2vw, 14px);
+  }
+  .flow-row {
+    display: flex; align-items: flex-start;
+    justify-content: center;
+    gap: 0; flex-shrink: 0;
+  }
+  .step-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    width: clamp(90px, 22%, 160px);
+  }
+  .step-label {
+    font-size: clamp(10px, 1.4vw, 13px);
+    font-weight: 600; color: #5a9e3a;
+    margin-bottom: clamp(4px, 0.8vw, 8px);
+  }
+  .icon-ring {
+    width: clamp(48px, 10vw, 78px);
+    height: clamp(48px, 10vw, 78px);
+    border-radius: 50%;
+    border: 2px solid #b8d9a8;
+    background: #e8f0e4;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .icon-ring:hover { border-color: #5a9e3a; transform: scale(1.06); }
+  .icon-ring.active { border-color: #3a7a20; background: #d6edd0; }
+  .icon-inner {
+    width: 68%; height: 68%;
+    border-radius: 50%; background: #c8e0c0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .icon-inner svg { width: 55%; height: 55%; }
+  .step-name {
+    font-size: clamp(10px, 1.4vw, 13px);
+    font-weight: 700; color: #2a2a2a;
+    text-align: center; margin-top: clamp(6px, 1vw, 12px);
+    line-height: 1.3;
+  }
+  .arrow-wrap {
+    display: flex; align-items: center;
+    padding-top: clamp(18px, 4vw, 32px);
+    flex-shrink: 0;
+  }
+  .arrow-wrap svg { width: clamp(20px, 4vw, 36px); height: 20px; }
+  .details-area {
+    flex: 1; display: flex;
+    gap: clamp(8px, 2vw, 16px);
+    margin-top: clamp(8px, 1.5vw, 14px);
+    min-height: 0;
+  }
+  .detail-card {
+    flex: 1;
+    background: #fff;
+    border-radius: 12px;
+    border: 1.5px solid #c8d9c0;
+    padding: clamp(8px, 1.5vw, 16px) clamp(8px, 1.5vw, 18px);
+    display: none; flex-direction: column; justify-content: center;
+    overflow: hidden;
+  }
+  .detail-card.visible { display: flex; }
+  .detail-card .tag {
+    font-size: clamp(9px, 1.2vw, 11px);
+    font-weight: 600; color: #4a8e2a;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: clamp(4px, 0.8vw, 8px);
+  }
+  .detail-card p {
+    font-size: clamp(11px, 1.5vw, 13px);
+    color: #3a3a3a; line-height: 1.6;
+  }
+  .empty-state {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    color: #9ab88a; font-size: clamp(11px, 1.5vw, 13px);
+    font-style: italic;
+  }
+  .summary-bar {
+    background: #fff; border-radius: 10px;
+    padding: clamp(8px, 1.5vw, 13px) clamp(12px, 2vw, 20px);
+    margin-top: clamp(8px, 1.5vw, 16px);
+    text-align: center;
+    font-size: clamp(11px, 1.5vw, 13px);
+    color: #2a2a2a; border: 1px solid #dde8d8;
+    flex-shrink: 0;
+  }
+  .summary-bar strong { color: #3a7a20; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="slide-title">What Makes Wallet Payments Different?</div>
+  <div class="divider"></div>
+  <p class="hint">Click each step to explore</p>
+
+  <div class="flow-row">
+    <div class="step-wrap">
+      <div class="step-label">Step 1</div>
+      <div class="icon-ring" id="s1" onclick="select(1)">
+        <div class="icon-inner">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="6" width="18" height="13" rx="2" stroke="#3a7a20" stroke-width="1.8"/>
+            <path d="M3 10h18" stroke="#3a7a20" stroke-width="1.8"/>
+            <rect x="6" y="13" width="5" height="2.5" rx="0.5" fill="#3a7a20"/>
+          </svg>
+        </div>
+      </div>
+      <div class="step-name">Card stored<br>in wallet</div>
+    </div>
+    <div class="arrow-wrap">
+      <svg viewBox="0 0 36 20"><path d="M2 10h26M22 4l8 6-8 6" stroke="#5a9e3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </div>
+    <div class="step-wrap">
+      <div class="step-label">Step 2</div>
+      <div class="icon-ring" id="s2" onclick="select(2)">
+        <div class="icon-inner">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" stroke="#3a7a20" stroke-width="1.8"/>
+            <path d="M12 8v4l3 2" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="step-name">Token<br>generated</div>
+    </div>
+    <div class="arrow-wrap">
+      <svg viewBox="0 0 36 20"><path d="M2 10h26M22 4l8 6-8 6" stroke="#5a9e3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </div>
+    <div class="step-wrap">
+      <div class="step-label">Step 3</div>
+      <div class="icon-ring" id="s3" onclick="select(3)">
+        <div class="icon-inner">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 3L20 7v5c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V7l8-4z" stroke="#3a7a20" stroke-width="1.8"/>
+            <path d="M9 12l2 2 4-4" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="step-name">Token sent<br>to merchant</div>
+    </div>
+    <div class="arrow-wrap">
+      <svg viewBox="0 0 36 20"><path d="M2 10h26M22 4l8 6-8 6" stroke="#5a9e3a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </div>
+    <div class="step-wrap">
+      <div class="step-label">Step 4</div>
+      <div class="icon-ring" id="s4" onclick="select(4)">
+        <div class="icon-inner">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="8" stroke="#3a7a20" stroke-width="1.8"/>
+            <path d="M8 12l3 3 5-5" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+      <div class="step-name">Payment<br>approved</div>
+    </div>
+  </div>
+
+  <div class="details-area" id="details-area">
+    <div class="empty-state" id="empty-msg">← Select a step above to learn more</div>
+    <div class="detail-card" id="d1">
+      <div class="tag">Step 1 — Card stored in wallet</div>
+      <p>Your real card number is securely stored in Apple Pay or Google Pay during setup. It never leaves your device again.</p>
+    </div>
+    <div class="detail-card" id="d2">
+      <div class="tag">Step 2 — Tokenization</div>
+      <p>A unique secure token replaces your real card number. This token is transaction-specific — it changes every time you pay.</p>
+    </div>
+    <div class="detail-card" id="d3">
+      <div class="tag">Step 3 — Token sent to merchant</div>
+      <p>Only the token — never your real card number — is shared with the merchant. Sensitive data stays fully protected.</p>
+    </div>
+    <div class="detail-card" id="d4">
+      <div class="tag">Step 4 — Payment approved</div>
+      <p>The bank validates the token and approves the payment. Your real card data was never exposed at any point in the flow.</p>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    The real card number is <strong>never shared</strong> with the merchant. Tokenization keeps your data safe at every step.
+  </div>
+</div>
+
+<script>
+  let current = null;
+  function select(n) {
+    for (let i = 1; i <= 4; i++) {
+      document.getElementById('s'+i).classList.remove('active');
+      document.getElementById('d'+i).classList.remove('visible');
+    }
+    const empty = document.getElementById('empty-msg');
+    if (current === n) { current = null; empty.style.display = 'flex'; return; }
+    current = n;
+    empty.style.display = 'none';
+    document.getElementById('s'+n).classList.add('active');
+    document.getElementById('d'+n).classList.add('visible');
+  }
+</script>
+</body>
+</html>

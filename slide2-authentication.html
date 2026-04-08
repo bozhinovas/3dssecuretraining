@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide 2 – Authentication in Wallet Payments</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #edf0ec;
+  }
+  .slide {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    padding: clamp(12px, 3vw, 32px) clamp(12px, 4vw, 40px) clamp(10px, 2.5vw, 24px);
+  }
+  .slide-title {
+    color: #2d5a1b;
+    font-size: clamp(15px, 2.8vw, 24px);
+    font-weight: 700; text-align: center; flex-shrink: 0;
+  }
+  .divider {
+    height: 2px; background: #c8d9c0; border-radius: 2px;
+    margin: clamp(6px, 1.2vw, 14px) 0; flex-shrink: 0;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: clamp(10px, 1.5vw, 13px);
+    color: #4a5a44; flex-shrink: 0;
+    margin-bottom: clamp(8px, 1.5vw, 18px);
+  }
+  .cards-row {
+    display: flex; gap: clamp(8px, 2vw, 16px);
+    justify-content: center; flex-shrink: 0;
+  }
+  .auth-card {
+    flex: 1; max-width: 220px;
+    background: #fff;
+    border-radius: 14px;
+    border: 2px solid #c8d9c0;
+    padding: clamp(12px, 2vw, 20px) clamp(10px, 1.5vw, 14px) clamp(10px, 1.5vw, 16px);
+    text-align: center; cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+  }
+  .auth-card:hover { border-color: #5a9e3a; transform: translateY(-3px); }
+  .auth-card.revealed { border-color: #3a7a20; background: #f4faf0; }
+  .auth-icon {
+    width: clamp(44px, 8vw, 60px);
+    height: clamp(44px, 8vw, 60px);
+    background: #d0e8c8; border-radius: 50%;
+    margin: 0 auto clamp(8px, 1.2vw, 12px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .auth-icon svg { width: 55%; height: 55%; }
+  .auth-name {
+    font-size: clamp(12px, 1.6vw, 15px);
+    font-weight: 700; color: #2d5a1b;
+    margin-bottom: clamp(4px, 0.8vw, 6px);
+  }
+  .auth-detail {
+    font-size: clamp(10px, 1.3vw, 12.5px);
+    color: #555; line-height: 1.5; display: none;
+  }
+  .auth-card.revealed .auth-detail { display: block; }
+  .auth-hint {
+    font-size: clamp(9px, 1.1vw, 11px);
+    color: #7a9a6a; margin-top: clamp(6px, 1vw, 10px);
+  }
+  .auth-card.revealed .auth-hint { display: none; }
+  .outcome-row {
+    display: flex; gap: clamp(8px, 2vw, 14px);
+    flex: 1; margin-top: clamp(8px, 1.5vw, 14px);
+    min-height: 0;
+  }
+  .outcome-box {
+    flex: 1; background: #fff;
+    border-radius: 12px; border: 1px solid #d8e8d0;
+    padding: clamp(8px, 1.5vw, 14px) clamp(10px, 1.5vw, 16px);
+    display: flex; flex-direction: column; justify-content: center;
+    text-align: center;
+  }
+  .outcome-box .badge {
+    display: inline-block;
+    background: #daf0d0; color: #2d6614;
+    font-size: clamp(9px, 1.2vw, 11px);
+    font-weight: 700; border-radius: 20px;
+    padding: 3px 10px; margin-bottom: clamp(4px, 0.8vw, 8px);
+  }
+  .outcome-box p {
+    font-size: clamp(10px, 1.4vw, 12.5px);
+    color: #3a3a3a; line-height: 1.5;
+  }
+  .summary-bar {
+    background: #fff; border-radius: 10px;
+    padding: clamp(8px, 1.5vw, 13px) clamp(12px, 2vw, 20px);
+    margin-top: clamp(8px, 1.5vw, 16px);
+    text-align: center;
+    font-size: clamp(11px, 1.5vw, 13px);
+    color: #2a2a2a; border: 1px solid #dde8d8;
+    flex-shrink: 0;
+  }
+  .summary-bar strong { color: #3a7a20; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="slide-title">Authentication in Wallet Payments</div>
+  <div class="divider"></div>
+  <p class="subtitle">Wallet payments include built-in customer verification — tap each method to learn more.</p>
+
+  <div class="cards-row">
+    <div class="auth-card" id="c1" onclick="reveal('c1')">
+      <div class="auth-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="18" height="18" rx="4" stroke="#3a7a20" stroke-width="1.8"/>
+          <circle cx="9" cy="10" r="1.2" fill="#3a7a20"/>
+          <circle cx="15" cy="10" r="1.2" fill="#3a7a20"/>
+          <path d="M9 15c1 1.2 5 1.2 6 0" stroke="#3a7a20" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 7v1.5M7 12h1.5M15.5 12H17" stroke="#3a7a20" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="auth-name">Face ID</div>
+      <div class="auth-detail">Maps 30,000+ invisible dots to create a unique face model. Approves payment in under a second.</div>
+      <div class="auth-hint">tap to reveal ↓</div>
+    </div>
+
+    <div class="auth-card" id="c2" onclick="reveal('c2')">
+      <div class="auth-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 4C8.5 4 6 6.5 6 10c0 2 .5 4 1 6" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M12 7c-2 0-3 1.5-3 3 0 1.5.3 3.5.8 5" stroke="#3a7a20" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M12 10c-.5 0-1 .5-1 1.5 0 1 .2 2.5.5 3.5" stroke="#3a7a20" stroke-width="1.3" stroke-linecap="round"/>
+          <path d="M15 7c1.5.8 2.5 2.2 2.5 4 0 1.5-.2 3.5-.7 5.5" stroke="#3a7a20" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M18 10c.5.8.8 1.8.8 3 0 2-.3 4-.8 6" stroke="#3a7a20" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="auth-name">Fingerprint</div>
+      <div class="auth-detail">Touch ID reads your unique fingerprint ridge pattern. Stored only on-device — never sent to servers.</div>
+      <div class="auth-hint">tap to reveal ↓</div>
+    </div>
+
+    <div class="auth-card" id="c3" onclick="reveal('c3')">
+      <div class="auth-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <rect x="7" y="4" width="10" height="16" rx="3" stroke="#3a7a20" stroke-width="1.8"/>
+          <rect x="10" y="8" width="4" height="3" rx="1" stroke="#3a7a20" stroke-width="1.3"/>
+          <circle cx="12" cy="15" r="1.2" fill="#3a7a20"/>
+        </svg>
+      </div>
+      <div class="auth-name">Device PIN</div>
+      <div class="auth-detail">A fallback verification layer when biometrics aren't available, ensuring payment is always owner-authorized.</div>
+      <div class="auth-hint">tap to reveal ↓</div>
+    </div>
+  </div>
+
+  <div class="outcome-row">
+    <div class="outcome-box">
+      <div class="badge">Result</div>
+      <p>Higher approval rates — banks trust that the real cardholder is present</p>
+    </div>
+    <div class="outcome-box">
+      <div class="badge">Result</div>
+      <p>Lower fraud risk — strong biometric proof reduces unauthorized transactions</p>
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    Built-in authentication means <strong>you are the verification</strong> — no extra OTP or challenge required.
+  </div>
+</div>
+
+<script>
+  function reveal(id) {
+    document.getElementById(id).classList.toggle('revealed');
+  }
+</script>
+</body>
+</html>

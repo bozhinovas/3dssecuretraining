@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide 3 – Operational Impact</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #edf0ec;
+  }
+  .slide {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    padding: clamp(12px, 3vw, 32px) clamp(12px, 4vw, 40px) clamp(10px, 2.5vw, 24px);
+  }
+  .slide-title {
+    color: #2d5a1b;
+    font-size: clamp(15px, 2.8vw, 24px);
+    font-weight: 700; text-align: center; flex-shrink: 0;
+  }
+  .divider {
+    height: 2px; background: #c8d9c0; border-radius: 2px;
+    margin: clamp(6px, 1.2vw, 14px) 0; flex-shrink: 0;
+  }
+  .toggle-bar {
+    display: flex; background: #dce8d8;
+    border-radius: 30px; padding: 4px;
+    max-width: 360px; margin: 0 auto clamp(10px, 2vw, 20px);
+    flex-shrink: 0;
+  }
+  .toggle-btn {
+    flex: 1; padding: clamp(6px, 1vw, 8px) 12px;
+    border-radius: 26px; border: none;
+    background: transparent;
+    font-size: clamp(11px, 1.5vw, 13px);
+    font-weight: 600; color: #4a6a3a;
+    cursor: pointer; transition: background 0.2s, color 0.2s;
+  }
+  .toggle-btn.active { background: #3a7a20; color: #fff; }
+  .impact-grid {
+    display: flex; gap: clamp(8px, 2vw, 14px);
+    flex-shrink: 0;
+  }
+  .impact-card {
+    flex: 1; background: #fff;
+    border-radius: 14px; border: 1.5px solid #c8d9c0;
+    padding: clamp(10px, 1.8vw, 18px) clamp(8px, 1.2vw, 14px) clamp(10px, 1.5vw, 14px);
+    text-align: center;
+    transition: opacity 0.3s;
+  }
+  .impact-card.dimmed { opacity: 0.38; }
+  .impact-icon {
+    width: clamp(40px, 7vw, 56px);
+    height: clamp(40px, 7vw, 56px);
+    border-radius: 50%; background: #d4ecc8;
+    margin: 0 auto clamp(6px, 1vw, 10px);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .impact-icon svg { width: 55%; height: 55%; }
+  .impact-title {
+    font-size: clamp(11px, 1.5vw, 13px);
+    font-weight: 700; color: #2d5a1b;
+    margin-bottom: clamp(4px, 0.8vw, 6px);
+    line-height: 1.3;
+  }
+  .impact-desc {
+    font-size: clamp(10px, 1.3vw, 12px);
+    color: #555; line-height: 1.5;
+    margin-bottom: clamp(4px, 0.8vw, 8px);
+  }
+  .impact-tag {
+    display: inline-block; border-radius: 20px;
+    font-size: clamp(9px, 1.2vw, 11px);
+    font-weight: 700; padding: 3px 10px;
+  }
+  .tag-wallet { background: #d4ecc8; color: #2d6614; }
+  .tag-standard { background: #fde9cc; color: #8a4d10; }
+  .compare-area {
+    flex: 1; display: flex; flex-direction: column;
+    gap: clamp(6px, 1.2vw, 10px);
+    margin-top: clamp(8px, 1.5vw, 14px);
+    min-height: 0;
+  }
+  .compare-row {
+    flex: 1; display: flex;
+    background: #fff; border-radius: 10px;
+    border: 1px solid #d8e8d0;
+    overflow: hidden; min-height: 0;
+  }
+  .compare-label {
+    width: clamp(100px, 20%, 160px);
+    background: #f0f7ec;
+    display: flex; align-items: center; justify-content: center;
+    font-size: clamp(10px, 1.3vw, 12px);
+    font-weight: 600; color: #2d5a1b;
+    padding: 8px; text-align: center;
+    line-height: 1.3; flex-shrink: 0;
+    border-right: 1px solid #d8e8d0;
+  }
+  .compare-value {
+    flex: 1; display: flex; align-items: center;
+    padding: clamp(6px, 1vw, 10px) clamp(8px, 1.5vw, 14px);
+    font-size: clamp(10px, 1.3vw, 12.5px);
+    color: #3a3a3a; line-height: 1.5;
+    transition: opacity 0.25s;
+  }
+  .summary-bar {
+    background: #fff; border-radius: 10px;
+    padding: clamp(8px, 1.5vw, 13px) clamp(12px, 2vw, 20px);
+    margin-top: clamp(8px, 1.5vw, 14px);
+    text-align: center;
+    font-size: clamp(11px, 1.5vw, 13px);
+    color: #2a2a2a; border: 1px solid #dde8d8;
+    flex-shrink: 0;
+  }
+  .summary-bar strong { color: #3a7a20; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="slide-title">Operational Impact</div>
+  <div class="divider"></div>
+
+  <div class="toggle-bar">
+    <button class="toggle-btn active" id="btn-wallet" onclick="showView('wallet')">Wallet Payments</button>
+    <button class="toggle-btn" id="btn-standard" onclick="showView('standard')">Standard Cards</button>
+  </div>
+
+  <div class="impact-grid">
+    <div class="impact-card">
+      <div class="impact-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L20 7v5c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V7l8-4z" stroke="#3a7a20" stroke-width="1.8"/>
+          <path d="M9 12l2 2 4-4" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="impact-title">Auth Challenges</div>
+      <div class="impact-desc" id="desc-auth">Fewer challenges needed — biometric auth signals strong cardholder confidence</div>
+      <div class="impact-tag tag-wallet" id="tag-auth">Fewer required</div>
+    </div>
+
+    <div class="impact-card">
+      <div class="impact-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M5 7h14l-1.5 9H6.5L5 7z" stroke="#3a7a20" stroke-width="1.8"/>
+          <path d="M5 7L4 4H2" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="9" cy="19.5" r="1.2" fill="#3a7a20"/>
+          <circle cx="16" cy="19.5" r="1.2" fill="#3a7a20"/>
+        </svg>
+      </div>
+      <div class="impact-title">Checkout Experience</div>
+      <div class="impact-desc" id="desc-checkout">Smooth, one-touch checkout — no manual card entry, no OTP wait</div>
+      <div class="impact-tag tag-wallet" id="tag-checkout">Frictionless</div>
+    </div>
+
+    <div class="impact-card">
+      <div class="impact-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <polyline points="4 15 9 20 20 6" stroke="#3a7a20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 8L12 4 20 8" stroke="#3a7a20" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="impact-title">Approval Rate</div>
+      <div class="impact-desc" id="desc-approval">Higher approval rates — banks trust wallet transactions more due to built-in auth</div>
+      <div class="impact-tag tag-wallet" id="tag-approval">Higher</div>
+    </div>
+  </div>
+
+  <div class="compare-area">
+    <div class="compare-row">
+      <div class="compare-label">Authentication</div>
+      <div class="compare-value" id="cv-auth">Biometric (Face ID / Fingerprint) — verified before payment even reaches the bank</div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-label">Card data shared</div>
+      <div class="compare-value" id="cv-data">Token only — real card number never leaves the device</div>
+    </div>
+    <div class="compare-row">
+      <div class="compare-label">Fraud exposure</div>
+      <div class="compare-value" id="cv-fraud">Significantly lower — token is useless to fraudsters without the device</div>
+    </div>
+  </div>
+
+  <div class="summary-bar" id="summary-bar">
+    Wallet payments offer a <strong>faster, safer, smoother</strong> experience — for both customers and your business.
+  </div>
+</div>
+
+<script>
+  const data = {
+    wallet: {
+      'desc-auth': 'Fewer challenges needed — biometric auth signals strong cardholder confidence',
+      'tag-auth': ['Fewer required', 'tag-wallet'],
+      'desc-checkout': 'Smooth, one-touch checkout — no manual card entry, no OTP wait',
+      'tag-checkout': ['Frictionless', 'tag-wallet'],
+      'desc-approval': 'Higher approval rates — banks trust wallet transactions more due to built-in auth',
+      'tag-approval': ['Higher', 'tag-wallet'],
+      'cv-auth': 'Biometric (Face ID / Fingerprint) — verified before payment even reaches the bank',
+      'cv-data': 'Token only — real card number never leaves the device',
+      'cv-fraud': 'Significantly lower — token is useless to fraudsters without the device',
+      summary: 'Wallet payments offer a <strong>faster, safer, smoother</strong> experience — for both customers and your business.'
+    },
+    standard: {
+      'desc-auth': 'More challenges triggered — bank has less certainty about who is paying',
+      'tag-auth': ['More frequent', 'tag-standard'],
+      'desc-checkout': 'Customer must enter card details manually; OTP or 3DS challenge often follows',
+      'tag-checkout': ['More steps', 'tag-standard'],
+      'desc-approval': 'Higher decline rates — more friction and greater fraud exposure affect approvals',
+      'tag-approval': ['Lower', 'tag-standard'],
+      'cv-auth': 'No built-in verification — bank relies on 3DS challenges to confirm identity',
+      'cv-data': 'Full card number entered and transmitted — higher exposure risk',
+      'cv-fraud': 'Higher exposure — card details can be intercepted or reused',
+      summary: 'Standard card payments introduce <strong>more friction</strong> — more challenges, more drop-offs, lower approval.'
+    }
+  };
+
+  function showView(view) {
+    const d = data[view];
+    document.getElementById('btn-wallet').classList.toggle('active', view === 'wallet');
+    document.getElementById('btn-standard').classList.toggle('active', view === 'standard');
+    ['auth','checkout','approval'].forEach(k => {
+      document.getElementById('desc-'+k).textContent = d['desc-'+k];
+      const tag = document.getElementById('tag-'+k);
+      tag.textContent = d['tag-'+k][0];
+      tag.className = 'impact-tag ' + d['tag-'+k][1];
+    });
+    ['auth','data','fraud'].forEach(k => {
+      document.getElementById('cv-'+k).textContent = d['cv-'+k];
+    });
+    document.getElementById('summary-bar').innerHTML = d.summary;
+  }
+</script>
+</body>
+</html>
