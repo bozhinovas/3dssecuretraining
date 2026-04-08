@@ -1,0 +1,117 @@
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans, sans-serif); }
+  .slide { background: #edf0ec; border-radius: 16px; padding: 36px 40px 28px; }
+  .slide-title { color: #2d5a1b; font-size: 22px; font-weight: 700; text-align: center; }
+  .divider { height: 2px; background: #c8d9c0; border-radius: 2px; margin: 14px 0 24px; }
+  .toggle-bar { display: flex; background: #dce8d8; border-radius: 30px; padding: 4px; max-width: 360px; margin: 0 auto 24px; }
+  .toggle-btn { flex: 1; padding: 8px 12px; border-radius: 26px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: #4a6a3a; cursor: pointer; transition: background 0.2s, color 0.2s; }
+  .toggle-btn.active { background: #3a7a20; color: #fff; }
+  .impact-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  .impact-card { background: #fff; border-radius: 14px; border: 1.5px solid #c8d9c0; padding: 18px 14px 14px; text-align: center; transition: opacity 0.3s; }
+  .impact-card.dimmed { opacity: 0.38; }
+  .impact-icon { width: 52px; height: 52px; border-radius: 50%; background: #d4ecc8; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
+  .impact-icon svg { width: 26px; height: 26px; }
+  .impact-title { font-size: 13px; font-weight: 700; color: #2d5a1b; margin-bottom: 6px; }
+  .impact-desc { font-size: 12px; color: #555; line-height: 1.5; }
+  .impact-tag { display: inline-block; border-radius: 20px; font-size: 11px; font-weight: 700; padding: 3px 10px; margin-top: 8px; }
+  .tag-wallet { background: #d4ecc8; color: #2d6614; }
+  .tag-standard { background: #fde9cc; color: #8a4d10; }
+  .summary-bar { background: #fff; border-radius: 10px; padding: 13px 20px; margin-top: 6px; text-align: center; font-size: 13px; color: #2a2a2a; border: 1px solid #dde8d8; }
+  .summary-bar strong { color: #3a7a20; }
+  .hint { text-align: center; font-size: 11.5px; color: #7a9a6a; margin-bottom: 12px; }
+</style>
+
+<div class="slide">
+  <div class="slide-title">Operational Impact</div>
+  <div class="divider"></div>
+  <p class="hint">Compare wallet vs standard card payments</p>
+
+  <div class="toggle-bar">
+    <button class="toggle-btn active" id="btn-wallet" onclick="showView('wallet')">Wallet Payments</button>
+    <button class="toggle-btn" id="btn-standard" onclick="showView('standard')">Standard Cards</button>
+  </div>
+
+  <div class="impact-grid">
+    <!-- Authentication challenges -->
+    <div class="impact-card" id="card-auth">
+      <div class="impact-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 3L20 7v5c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V7l8-4z" stroke="#3a7a20" stroke-width="1.8"/>
+          <path d="M9 12l2 2 4-4" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="impact-title">Authentication<br>Challenges</div>
+      <div class="impact-desc" id="desc-auth">Fewer challenges — biometric auth signals strong confidence to the bank</div>
+      <div class="impact-tag tag-wallet" id="tag-auth">Fewer required</div>
+    </div>
+
+    <!-- Checkout experience -->
+    <div class="impact-card" id="card-checkout">
+      <div class="impact-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M5 7h14l-1.5 9H6.5L5 7z" stroke="#3a7a20" stroke-width="1.8"/>
+          <path d="M5 7L4 4H2" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="9" cy="19.5" r="1.2" fill="#3a7a20"/>
+          <circle cx="16" cy="19.5" r="1.2" fill="#3a7a20"/>
+        </svg>
+      </div>
+      <div class="impact-title">Checkout<br>Experience</div>
+      <div class="impact-desc" id="desc-checkout">Smooth, one-touch checkout — no card entry, no OTP wait</div>
+      <div class="impact-tag tag-wallet" id="tag-checkout">Frictionless</div>
+    </div>
+
+    <!-- Approval rates -->
+    <div class="impact-card" id="card-approval">
+      <div class="impact-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <polyline points="4 15 9 20 20 6" stroke="#3a7a20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 8 L12 4 L20 8" stroke="#3a7a20" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="impact-title">Payment<br>Approval Rate</div>
+      <div class="impact-desc" id="desc-approval">Higher approval rates due to built-in authentication reducing perceived fraud risk</div>
+      <div class="impact-tag tag-wallet" id="tag-approval">Higher</div>
+    </div>
+  </div>
+
+  <div class="summary-bar" id="summary-bar">
+    Wallet payments offer a <strong>faster, safer, smoother</strong> experience — for both customers and your business.
+  </div>
+</div>
+
+<script>
+const content = {
+  wallet: {
+    'desc-auth': 'Fewer challenges — biometric auth signals strong confidence to the bank',
+    'tag-auth': ['Fewer required', 'tag-wallet'],
+    'desc-checkout': 'Smooth, one-touch checkout — no card entry, no OTP wait',
+    'tag-checkout': ['Frictionless', 'tag-wallet'],
+    'desc-approval': 'Higher approval rates due to built-in authentication reducing perceived fraud risk',
+    'tag-approval': ['Higher', 'tag-wallet'],
+    summary: 'Wallet payments offer a <strong>faster, safer, smoother</strong> experience — for both customers and your business.'
+  },
+  standard: {
+    'desc-auth': 'More challenges triggered — bank has less certainty about who is paying',
+    'tag-auth': ['More frequent', 'tag-standard'],
+    'desc-checkout': 'Customer must enter card details manually; OTP or 3DS challenge often required',
+    'tag-checkout': ['More steps', 'tag-standard'],
+    'desc-approval': 'Higher decline rates due to increased friction and fraud exposure',
+    'tag-approval': ['Lower', 'tag-standard'],
+    summary: 'Standard card payments introduce <strong>more friction</strong> — more challenges, more drop-offs, lower approval.'
+  }
+};
+
+function showView(view) {
+  const d = content[view];
+  document.getElementById('btn-wallet').classList.toggle('active', view === 'wallet');
+  document.getElementById('btn-standard').classList.toggle('active', view === 'standard');
+  ['auth','checkout','approval'].forEach(k => {
+    document.getElementById('desc-'+k).textContent = d['desc-'+k];
+    const tag = document.getElementById('tag-'+k);
+    tag.textContent = d['tag-'+k][0];
+    tag.className = 'impact-tag ' + d['tag-'+k][1];
+  });
+  document.getElementById('summary-bar').innerHTML = d.summary;
+}
+</script>
