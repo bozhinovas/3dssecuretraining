@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slide – Liability Shift</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #edf0ec;
+  }
+  .slide {
+    width: 100vw; height: 100vh;
+    display: flex; flex-direction: column;
+    padding: clamp(10px, 2.2vw, 26px) clamp(14px, 4vw, 42px) clamp(10px, 2vw, 20px);
+  }
+  .slide-title {
+    color: #2d5a1b; font-size: clamp(15px, 2.8vw, 24px);
+    font-weight: 700; text-align: center; flex-shrink: 0;
+  }
+  .divider {
+    height: 2px; background: #c8d9c0; border-radius: 2px;
+    margin: clamp(5px, 0.9vw, 11px) 0; flex-shrink: 0;
+  }
+  .hint {
+    text-align: center; font-size: clamp(9px, 1.1vw, 11px);
+    color: #7a9a6a; flex-shrink: 0;
+    margin-bottom: clamp(5px, 1vw, 10px);
+  }
+
+  .main-row {
+    display: flex; gap: clamp(8px, 2vw, 18px);
+    flex: 1; min-height: 0;
+  }
+
+  /* LEFT: shift diagram */
+  .left-col {
+    flex: 1.1; display: flex; flex-direction: column;
+    gap: clamp(6px, 1.2vw, 10px); min-width: 0;
+  }
+
+  .shift-box {
+    flex: 1; border-radius: 14px; border: 1.5px solid #c8d9c0;
+    background: #fff; display: flex; align-items: center;
+    gap: clamp(10px, 1.8vw, 16px);
+    padding: clamp(10px, 1.8vw, 18px) clamp(10px, 1.5vw, 16px);
+    cursor: pointer; transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .shift-box:hover { border-color: #5a9e3a; }
+  .shift-box.active-merchant { border-color: #3a7a20; background: #f0faea; }
+  .shift-box.active-bank     { border-color: #c87a10; background: #fef5e7; }
+
+  .entity-icon {
+    width: clamp(44px, 7vw, 60px); height: clamp(44px, 7vw, 60px);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .icon-merchant-color { background: #d4ecc8; }
+  .icon-bank-color     { background: #fde9cc; }
+  .entity-icon svg { width: 52%; height: 52%; }
+
+  .entity-text { flex: 1; min-width: 0; }
+  .entity-name {
+    font-size: clamp(12px, 1.6vw, 15px);
+    font-weight: 700; margin-bottom: 3px;
+  }
+  .name-merchant { color: #2d6614; }
+  .name-bank     { color: #8a4d10; }
+  .entity-desc {
+    font-size: clamp(10px, 1.3vw, 12.5px);
+    color: #666; line-height: 1.4;
+  }
+
+  .arrow-row {
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; height: clamp(28px, 4vw, 40px); position: relative;
+  }
+  .arrow-label {
+    font-size: clamp(10px, 1.3vw, 12px);
+    font-weight: 700; color: #3a7a20;
+    background: #edf0ec; padding: 2px 10px;
+    border-radius: 20px; z-index: 1;
+  }
+  .arrow-line {
+    position: absolute; left: 0; right: 0;
+    height: 2px; background: #c8d9c0; top: 50%;
+  }
+
+  /* RIGHT: conditions flashcards */
+  .right-col {
+    flex: 1; display: flex; flex-direction: column;
+    gap: clamp(6px, 1.2vw, 10px); min-width: 0;
+  }
+  .col-label {
+    font-size: clamp(9px, 1.1vw, 11px); font-weight: 700;
+    color: #5a9e3a; text-transform: uppercase;
+    letter-spacing: 0.5px; flex-shrink: 0;
+  }
+
+  /* flip cards for conditions */
+  .flip-wrap {
+    flex: 1; perspective: 1000px; cursor: pointer; min-height: 0;
+  }
+  .flip-inner {
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.4s ease;
+  }
+  .flip-wrap.flipped .flip-inner { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0;
+    border-radius: 12px; border: 1.5px solid #c8d9c0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    display: flex; align-items: center;
+    gap: clamp(8px, 1.2vw, 12px);
+    padding: clamp(8px, 1.4vw, 14px) clamp(10px, 1.4vw, 14px);
+  }
+  .face-front { background: #fff; }
+  .face-back  { background: #f0faea; border-color: #3a7a20; transform: rotateY(180deg);
+                flex-direction: column; align-items: flex-start; justify-content: center; }
+
+  .cond-icon {
+    width: clamp(32px, 5vw, 44px); height: clamp(32px, 5vw, 44px);
+    border-radius: 50%; background: #d4ecc8;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .cond-icon svg { width: 52%; height: 52%; }
+  .cond-title {
+    font-size: clamp(11px, 1.4vw, 14px);
+    font-weight: 700; color: #2d5a1b; flex: 1;
+  }
+  .cond-hint { font-size: clamp(9px, 1.1vw, 11px); color: #aac89a; margin-left: auto; }
+  .back-label {
+    font-size: clamp(9px, 1.1vw, 10px); font-weight: 700;
+    color: #4a8e2a; text-transform: uppercase; letter-spacing: 0.4px;
+    margin-bottom: 4px;
+  }
+  .back-desc {
+    font-size: clamp(10px, 1.3vw, 12.5px);
+    color: #2a3a22; line-height: 1.5;
+  }
+
+  .summary-bar {
+    background: #fff; border-radius: 10px;
+    padding: clamp(8px, 1.2vw, 12px) clamp(12px, 2vw, 20px);
+    margin-top: clamp(6px, 1.1vw, 12px);
+    text-align: center;
+    font-size: clamp(10px, 1.3vw, 13px);
+    color: #2a2a2a; border: 1px solid #dde8d8; flex-shrink: 0;
+  }
+  .summary-bar strong { color: #3a7a20; }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="slide-title">Liability Shift</div>
+  <div class="divider"></div>
+  <p class="hint">Click the cards on the right to explore the conditions</p>
+
+  <div class="main-row">
+
+    <!-- LEFT: who bears liability -->
+    <div class="left-col">
+
+      <div class="shift-box" id="box-merchant" onclick="setActive('merchant')">
+        <div class="entity-icon icon-merchant-color">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3 9l9-6 9 6v10a1 1 0 01-1 1H4a1 1 0 01-1-1V9z" stroke="#3a7a20" stroke-width="1.8"/>
+            <path d="M9 21V12h6v9" stroke="#3a7a20" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="entity-text">
+          <div class="entity-name name-merchant">Merchant</div>
+          <div class="entity-desc">Bears liability when 3DS is <strong>not used</strong> or transaction is not properly configured</div>
+        </div>
+      </div>
+
+      <div class="arrow-row">
+        <div class="arrow-line"></div>
+        <div class="arrow-label">3DS authenticated ↓ liability shifts</div>
+      </div>
+
+      <div class="shift-box" id="box-bank" onclick="setActive('bank')">
+        <div class="entity-icon icon-bank-color">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M3 10h18M12 4l9 6H3l9-6z" stroke="#c87a10" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M6 10v8M10 10v8M14 10v8M18 10v8" stroke="#c87a10" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M3 18h18" stroke="#c87a10" stroke-width="1.8"/>
+          </svg>
+        </div>
+        <div class="entity-text">
+          <div class="entity-name name-bank">Issuing bank</div>
+          <div class="entity-desc">Assumes liability for fraud chargebacks when <strong>3DS authentication was completed</strong> correctly</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: conditions flip cards -->
+    <div class="right-col">
+      <div class="col-label">Conditions for liability shift</div>
+
+      <div class="flip-wrap" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="face face-front">
+            <div class="cond-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="4" width="16" height="16" rx="3" stroke="#3a7a20" stroke-width="1.8"/>
+                <path d="M8 12l3 3 5-5" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="cond-title">Card scheme rules</div>
+            <div class="cond-hint">↻</div>
+          </div>
+          <div class="face face-back">
+            <div class="back-label">Condition</div>
+            <div class="back-desc">Visa, Mastercard and other schemes each define their own rules for when liability shifts. Not all schemes treat every transaction type the same way.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="face face-front">
+            <div class="cond-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 3L20 7v5c0 4.5-3.5 7.5-8 9-4.5-1.5-8-4.5-8-9V7l8-4z" stroke="#3a7a20" stroke-width="1.8"/>
+                <path d="M12 10v3.5M12 15.5v1" stroke="#3a7a20" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="cond-title">Authentication method</div>
+            <div class="cond-hint">↻</div>
+          </div>
+          <div class="face face-back">
+            <div class="back-label">Condition</div>
+            <div class="back-desc">The type of authentication used matters. Full 3DS authentication typically triggers a shift; frictionless flows or exemptions may not in all cases.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flip-wrap" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="face face-front">
+            <div class="cond-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <rect x="4" y="6" width="16" height="13" rx="2" stroke="#3a7a20" stroke-width="1.8"/>
+                <path d="M4 10h16" stroke="#3a7a20" stroke-width="1.5"/>
+                <path d="M8 14h4M8 17h2" stroke="#3a7a20" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="cond-title">Proper transaction configuration</div>
+            <div class="cond-hint">↻</div>
+          </div>
+          <div class="face face-back">
+            <div class="back-label">Condition</div>
+            <div class="back-desc">The merchant must correctly implement and pass 3DS data in the transaction. Misconfigured or incomplete data can void the liability shift.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="summary-bar">
+    3DS authentication <strong>can shift fraud liability to the issuing bank</strong> — but only when all conditions are correctly met.
+  </div>
+</div>
+
+<script>
+  function setActive(who) {
+    document.getElementById('box-merchant').classList.remove('active-merchant');
+    document.getElementById('box-bank').classList.remove('active-bank');
+    if (who === 'merchant') document.getElementById('box-merchant').classList.add('active-merchant');
+    if (who === 'bank')     document.getElementById('box-bank').classList.add('active-bank');
+  }
+</script>
+</body>
+</html>
